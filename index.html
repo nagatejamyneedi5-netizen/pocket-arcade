@@ -72,7 +72,7 @@
     <!-- GAME 2: FLAPPY BIRD -->
     <div id="flappy" class="game-screen">
       <h2>Flappy Bird</h2>
-      <p>Tap Screen or Press Space to Jump</p>
+      <p>Tap Canvas or Press Space to Jump</p>
       <canvas id="flappyCanvas" width="320" height="400"></canvas>
       <button class="action-btn" onclick="resetFlappy()">Restart Game</button>
     </div>
@@ -127,33 +127,51 @@
     }
 
     /* ---------------------------------
-       GAME 2: FLAPPY BIRD LOGIC
+       GAME 2: FLAPPY BIRD LOGIC (FIXED)
     ----------------------------------- */
     const canvas = document.getElementById("flappyCanvas");
     const ctx = canvas.getContext("2d");
-    let birdY = 150, gravity = 0.35, lift = -7, velocity = 0;
-    let pipes = [], frame = 0, flappyGameOver = false, animId = null;
+    let birdY = 180, gravity = 0.35, lift = -7, velocity = 0;
+    let pipes = [], frame = 0, flappyGameOver = false, gameStarted = false, animId = null;
 
     function resetFlappy() {
       if(animId) cancelAnimationFrame(animId);
-      birdY = 150; velocity = 0; pipes = []; frame = 0; flappyGameOver = false;
-      drawFlappy();
+      birdY = 180; velocity = 0; pipes = []; frame = 0; 
+      flappyGameOver = false; gameStarted = false;
+      drawStartScreen();
+    }
+
+    function drawStartScreen() {
+      ctx.fillStyle = "#70c5ce"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "#facc15"; ctx.beginPath(); ctx.arc(60, birdY, 12, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#fff"; ctx.font = "18px sans-serif";
+      ctx.fillText("Click or Press Space to Start", 40, 200);
     }
 
     function jump() { 
       if(activeGame !== 'flappy') return;
-      if(!flappyGameOver) {
+      if(!gameStarted) {
+        gameStarted = true;
+        velocity = lift;
+        drawFlappy();
+      } else if(!flappyGameOver) {
         velocity = lift; 
       } else {
         resetFlappy();
       }
     }
 
-    document.addEventListener("keydown", (e) => { if(e.code === "Space" && activeGame === 'flappy') jump(); });
+    document.addEventListener("keydown", (e) => { 
+      if(e.code === "Space" && activeGame === 'flappy') {
+        e.preventDefault();
+        jump(); 
+      }
+    });
     canvas.addEventListener("click", jump);
-    canvas.addEventListener("touchstart", (e) => { e.preventDefault(); jump(); }, { passive: false });
 
     function drawFlappy() {
+      if(!gameStarted) return;
+
       ctx.fillStyle = "#70c5ce"; ctx.fillRect(0, 0, canvas.width, canvas.height);
       velocity += gravity; birdY += velocity;
       
@@ -161,9 +179,9 @@
       ctx.fillStyle = "#facc15"; ctx.beginPath(); ctx.arc(60, birdY, 12, 0, Math.PI * 2); ctx.fill();
 
       // Spawn Pipes
-      if (frame % 100 === 0) {
-        let topH = Math.floor(Math.random() * (canvas.height - 180)) + 30;
-        pipes.push({ x: canvas.width, top: topH, bottom: canvas.height - topH - 110 });
+      if (frame % 110 === 0) {
+        let topH = Math.floor(Math.random() * (canvas.height - 200)) + 40;
+        pipes.push({ x: canvas.width, top: topH, bottom: canvas.height - topH - 120 });
       }
 
       ctx.fillStyle = "#22c55e";
@@ -215,7 +233,8 @@
       }
     });
 
-    init2048();
+    // Start with Tic-Tac-Toe
+    resetTTT();
   </script>
 </body>
 </html>
