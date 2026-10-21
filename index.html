@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Pocket Arcade - Play Free Games</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pocket Arcade - Free Games</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; touch-action: manipulation; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     body { background-color: #0f172a; color: #fff; display: flex; flex-direction: column; min-height: 100vh; text-align: center; }
     
     header { background: #1e293b; padding: 15px; border-bottom: 2px solid #334155; }
@@ -18,23 +18,14 @@
 
     /* Game Container */
     .game-area { flex: 1; display: flex; justify-content: center; align-items: center; padding: 10px; }
-    .game-screen { display: none; width: 100%; max-width: 400px; background: #1e293b; padding: 20px; border-radius: 12px; border: 1px solid #334155; }
-    .game-screen.active { display: block; }
+    .game-screen { display: none; width: 100%; max-width: 450px; height: 550px; background: #1e293b; border-radius: 12px; border: 1px solid #334155; overflow: hidden; }
+    .game-screen.active { display: flex; justify-content: center; align-items: center; }
 
-    /* --- GAME 1: TIC TAC TOE --- */
-    .ttt-board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 15px; }
-    .ttt-cell { width: 100%; height: 90px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; font-size: 36px; font-weight: bold; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #38bdf8; }
-
-    /* --- GAME 2: FLAPPY BIRD CANVAS --- */
-    canvas { background: #70c5ce; border-radius: 8px; display: block; margin: 0 auto; width: 100%; max-width: 320px; height: 400px; cursor: pointer; }
-
-    /* --- GAME 3: 2048 MINI --- */
-    .grid-2048 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; background: #0f172a; padding: 8px; border-radius: 8px; margin-top: 15px; }
-    .cell-2048 { width: 100%; height: 60px; background: #1e293b; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; color: #fff; }
+    /* Embed Frame */
+    iframe { width: 100%; height: 100%; border: none; background: #000; }
 
     /* AD CONTAINER */
     .ad-slot { width: 100%; max-width: 728px; height: 90px; margin: 10px auto; background: #1e293b; border: 1px dashed #475569; display: flex; align-items: center; justify-content: center; border-radius: 8px; color: #64748b; font-size: 12px; }
-    button.action-btn { margin-top: 15px; padding: 10px 20px; background: #38bdf8; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; color: #0f172a; }
   </style>
 </head>
 <body>
@@ -43,46 +34,27 @@
     <h1>🎮 Pocket Arcade</h1>
   </header>
 
-  <!-- Game Selector -->
+  <!-- Game Selector Buttons -->
   <div class="tab-bar">
-    <button class="tab-btn active" onclick="showGame('tictactoe', this)">❌ Tic-Tac-Toe</button>
-    <button class="tab-btn" onclick="showGame('flappy', this)">🐦 Flappy Bird</button>
-    <button class="tab-btn" onclick="showGame('g2048', this)">🔢 2048</button>
+    <button class="tab-btn active" onclick="showGame('game1', this)">🔢 2048</button>
+    <button class="tab-btn" onclick="showGame('game2', this)">🐦 Flappy Bird</button>
+    <button class="tab-btn" onclick="showGame('game3', this)">❌ Tic-Tac-Toe</button>
   </div>
 
   <main class="game-area">
-    <!-- GAME 1: TIC TAC TOE -->
-    <div id="tictactoe" class="game-screen active">
-      <h2>Tic-Tac-Toe</h2>
-      <p id="ttt-status">Turn: Player X</p>
-      <div class="ttt-board">
-        <div class="ttt-cell" onclick="makeMove(this, 0)"></div>
-        <div class="ttt-cell" onclick="makeMove(this, 1)"></div>
-        <div class="ttt-cell" onclick="makeMove(this, 2)"></div>
-        <div class="ttt-cell" onclick="makeMove(this, 3)"></div>
-        <div class="ttt-cell" onclick="makeMove(this, 4)"></div>
-        <div class="ttt-cell" onclick="makeMove(this, 5)"></div>
-        <div class="ttt-cell" onclick="makeMove(this, 6)"></div>
-        <div class="ttt-cell" onclick="makeMove(this, 7)"></div>
-        <div class="ttt-cell" onclick="makeMove(this, 8)"></div>
-      </div>
-      <button class="action-btn" onclick="resetTTT()">Restart Game</button>
+    <!-- GAME 1: 2048 (Open Source Embed) -->
+    <div id="game1" class="game-screen active">
+      <iframe src="https://play2048.co/"></iframe>
     </div>
 
-    <!-- GAME 2: FLAPPY BIRD -->
-    <div id="flappy" class="game-screen">
-      <h2>Flappy Bird</h2>
-      <p>Tap Canvas or Press Space to Jump</p>
-      <canvas id="flappyCanvas" width="320" height="400"></canvas>
-      <button class="action-btn" onclick="resetFlappy()">Restart Game</button>
+    <!-- GAME 2: FLAPPY BIRD (Open Source Embed) -->
+    <div id="game2" class="game-screen">
+      <iframe src="https://ciaranmcnamara.github.io/flappy-bird/"></iframe>
     </div>
 
-    <!-- GAME 3: 2048 -->
-    <div id="g2048" class="game-screen">
-      <h2>2048 Mini</h2>
-      <p>Use Arrow Keys to Move Numbers</p>
-      <div class="grid-2048" id="grid2048"></div>
-      <button class="action-btn" onclick="init2048()">New Game</button>
+    <!-- GAME 3: TIC-TAC-TOE (Open Source Embed) -->
+    <div id="game3" class="game-screen">
+      <iframe src="https://tic-tac-toe-three-theta-78.vercel.app/"></iframe>
     </div>
   </main>
 
@@ -93,148 +65,12 @@
   </div>
 
   <script>
-    let activeGame = 'tictactoe';
-
-    /* TAB SWITCHING SYSTEM */
     function showGame(gameId, btn) {
-      activeGame = gameId;
       document.querySelectorAll('.game-screen').forEach(el => el.classList.remove('active'));
       document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
       document.getElementById(gameId).classList.add('active');
       btn.classList.add('active');
-      if(gameId === 'flappy') resetFlappy();
-      if(gameId === 'g2048') init2048();
     }
-
-    /* ---------------------------------
-       GAME 1: TIC TAC TOE LOGIC
-    ----------------------------------- */
-    let tttTurn = 'X';
-    let tttBoard = ["","","","","","","","",""];
-    function makeMove(cell, idx) {
-      if(tttBoard[idx] !== "") return;
-      tttBoard[idx] = tttTurn;
-      cell.innerText = tttTurn;
-      cell.style.color = tttTurn === 'X' ? '#38bdf8' : '#f43f5e';
-      tttTurn = tttTurn === 'X' ? 'O' : 'X';
-      document.getElementById('ttt-status').innerText = `Turn: Player ${tttTurn}`;
-    }
-    function resetTTT() {
-      tttBoard = ["","","","","","","","",""];
-      tttTurn = 'X';
-      document.getElementById('ttt-status').innerText = "Turn: Player X";
-      document.querySelectorAll('.ttt-cell').forEach(c => c.innerText = "");
-    }
-
-    /* ---------------------------------
-       GAME 2: FLAPPY BIRD LOGIC (FIXED)
-    ----------------------------------- */
-    const canvas = document.getElementById("flappyCanvas");
-    const ctx = canvas.getContext("2d");
-    let birdY = 180, gravity = 0.35, lift = -7, velocity = 0;
-    let pipes = [], frame = 0, flappyGameOver = false, gameStarted = false, animId = null;
-
-    function resetFlappy() {
-      if(animId) cancelAnimationFrame(animId);
-      birdY = 180; velocity = 0; pipes = []; frame = 0; 
-      flappyGameOver = false; gameStarted = false;
-      drawStartScreen();
-    }
-
-    function drawStartScreen() {
-      ctx.fillStyle = "#70c5ce"; ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = "#facc15"; ctx.beginPath(); ctx.arc(60, birdY, 12, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = "#fff"; ctx.font = "18px sans-serif";
-      ctx.fillText("Click or Press Space to Start", 40, 200);
-    }
-
-    function jump() { 
-      if(activeGame !== 'flappy') return;
-      if(!gameStarted) {
-        gameStarted = true;
-        velocity = lift;
-        drawFlappy();
-      } else if(!flappyGameOver) {
-        velocity = lift; 
-      } else {
-        resetFlappy();
-      }
-    }
-
-    document.addEventListener("keydown", (e) => { 
-      if(e.code === "Space" && activeGame === 'flappy') {
-        e.preventDefault();
-        jump(); 
-      }
-    });
-    canvas.addEventListener("click", jump);
-
-    function drawFlappy() {
-      if(!gameStarted) return;
-
-      ctx.fillStyle = "#70c5ce"; ctx.fillRect(0, 0, canvas.width, canvas.height);
-      velocity += gravity; birdY += velocity;
-      
-      // Draw Bird
-      ctx.fillStyle = "#facc15"; ctx.beginPath(); ctx.arc(60, birdY, 12, 0, Math.PI * 2); ctx.fill();
-
-      // Spawn Pipes
-      if (frame % 110 === 0) {
-        let topH = Math.floor(Math.random() * (canvas.height - 200)) + 40;
-        pipes.push({ x: canvas.width, top: topH, bottom: canvas.height - topH - 120 });
-      }
-
-      ctx.fillStyle = "#22c55e";
-      pipes.forEach(p => {
-        p.x -= 2;
-        ctx.fillRect(p.x, 0, 30, p.top);
-        ctx.fillRect(p.x, canvas.height - p.bottom, 30, p.bottom);
-        if (60 > p.x && 60 < p.x + 30 && (birdY < p.top || birdY > canvas.height - p.bottom)) flappyGameOver = true;
-      });
-
-      if (birdY > canvas.height || birdY < 0) flappyGameOver = true;
-
-      if (!flappyGameOver && activeGame === 'flappy') { 
-        frame++; 
-        animId = requestAnimationFrame(drawFlappy); 
-      } else if (flappyGameOver) { 
-        ctx.fillStyle = "#fff"; ctx.font = "18px sans-serif"; ctx.fillText("Game Over! Tap to Restart", 50, 200); 
-      }
-    }
-
-    /* ---------------------------------
-       GAME 3: 2048 MINI LOGIC
-    ----------------------------------- */
-    let b2048 = Array(16).fill(0);
-    function init2048() {
-      b2048 = Array(16).fill(0);
-      add2048Tile(); add2048Tile(); render2048();
-    }
-    function add2048Tile() {
-      let empty = b2048.map((v, i) => v === 0 ? i : null).filter(v => v !== null);
-      if(empty.length) b2048[empty[Math.floor(Math.random() * empty.length)]] = Math.random() > 0.1 ? 2 : 4;
-    }
-    function render2048() {
-      const g = document.getElementById("grid2048"); g.innerHTML = "";
-      b2048.forEach(v => {
-        let d = document.createElement("div"); d.className = "cell-2048";
-        d.innerText = v ? v : "";
-        d.style.background = v ? "#38bdf8" : "#1e293b";
-        if(v >= 8) d.style.background = "#f59e0b";
-        g.appendChild(d);
-      });
-    }
-
-    document.addEventListener("keydown", (e) => {
-      if (activeGame !== 'g2048') return;
-      if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
-        add2048Tile();
-        render2048();
-      }
-    });
-
-    // Start with Tic-Tac-Toe
-    resetTTT();
   </script>
 </body>
 </html>
