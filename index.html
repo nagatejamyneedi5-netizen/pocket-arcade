@@ -21,16 +21,16 @@
     .game-screen { display: none; width: 100%; max-width: 400px; background: #1e293b; padding: 20px; border-radius: 12px; border: 1px solid #334155; }
     .game-screen.active { display: block; }
 
-    /* --- GAME 1: TIC TAC TOE --- */
+    /* --- TIC TAC TOE --- */
     .ttt-board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 15px; }
     .ttt-cell { width: 100%; height: 90px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; font-size: 36px; font-weight: bold; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #38bdf8; }
 
-    /* --- GAME 2: FLAPPY BIRD CANVAS --- */
+    /* --- FLAPPY BIRD --- */
     canvas { background: #70c5ce; border-radius: 8px; display: block; margin: 0 auto; width: 100%; max-width: 320px; height: 400px; cursor: pointer; }
 
-    /* --- GAME 3: 2048 MINI --- */
+    /* --- 2048 --- */
     .grid-2048 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; background: #0f172a; padding: 8px; border-radius: 8px; margin-top: 15px; }
-    .cell-2048 { width: 100%; height: 60px; background: #1e293b; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; color: #fff; }
+    .cell-2048 { width: 100%; height: 60px; background: #1e293b; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 20px; color: #fff; }
 
     /* AD CONTAINER */
     .ad-slot { width: 100%; max-width: 728px; height: 90px; margin: 10px auto; background: #1e293b; border: 1px dashed #475569; display: flex; align-items: center; justify-content: center; border-radius: 8px; color: #64748b; font-size: 12px; }
@@ -51,10 +51,10 @@
   </div>
 
   <main class="game-area">
-    <!-- GAME 1: TIC TAC TOE -->
+    <!-- TIC TAC TOE -->
     <div id="tictactoe" class="game-screen active">
       <h2>Tic-Tac-Toe</h2>
-      <p id="ttt-status">Turn: Player X</p>
+      <p id="ttt-status" style="margin-top:10px;">Turn: Player X</p>
       <div class="ttt-board">
         <div class="ttt-cell" onclick="makeMove(this, 0)"></div>
         <div class="ttt-cell" onclick="makeMove(this, 1)"></div>
@@ -69,18 +69,18 @@
       <button class="action-btn" onclick="resetTTT()">Restart Game</button>
     </div>
 
-    <!-- GAME 2: FLAPPY BIRD -->
+    <!-- FLAPPY BIRD -->
     <div id="flappy" class="game-screen">
       <h2>Flappy Bird</h2>
-      <p>Tap Canvas or Press Space to Jump</p>
+      <p style="margin-top:5px; font-size: 13px;">Tap or Space to Jump</p>
       <canvas id="flappyCanvas" width="320" height="400"></canvas>
       <button class="action-btn" onclick="resetFlappy()">Restart Game</button>
     </div>
 
-    <!-- GAME 3: 2048 -->
+    <!-- 2048 -->
     <div id="g2048" class="game-screen">
       <h2>2048 Mini</h2>
-      <p>Use Arrow Keys to Move Numbers</p>
+      <p style="margin-top:5px; font-size: 13px;">Use Arrow Keys or Swipe</p>
       <div class="grid-2048" id="grid2048"></div>
       <button class="action-btn" onclick="init2048()">New Game</button>
     </div>
@@ -95,7 +95,6 @@
   <script>
     let activeGame = 'tictactoe';
 
-    /* TAB SWITCHING SYSTEM */
     function showGame(gameId, btn) {
       activeGame = gameId;
       document.querySelectorAll('.game-screen').forEach(el => el.classList.remove('active'));
@@ -106,9 +105,7 @@
       if(gameId === 'g2048') init2048();
     }
 
-    /* ---------------------------------
-       GAME 1: TIC TAC TOE LOGIC
-    ----------------------------------- */
+    /* --- TIC TAC TOE LOGIC --- */
     let tttTurn = 'X';
     let tttBoard = ["","","","","","","","",""];
     function makeMove(cell, idx) {
@@ -126,17 +123,16 @@
       document.querySelectorAll('.ttt-cell').forEach(c => c.innerText = "");
     }
 
-    /* ---------------------------------
-       GAME 2: FLAPPY BIRD LOGIC (FIXED)
-    ----------------------------------- */
+    /* --- FLAPPY BIRD LOGIC (WITH SCORE & HIGH SCORE) --- */
     const canvas = document.getElementById("flappyCanvas");
     const ctx = canvas.getContext("2d");
     let birdY = 180, gravity = 0.35, lift = -7, velocity = 0;
-    let pipes = [], frame = 0, flappyGameOver = false, gameStarted = false, animId = null;
+    let pipes = [], frame = 0, score = 0, highScore = localStorage.getItem('flappyHighScore') || 0;
+    let flappyGameOver = false, gameStarted = false, animId = null;
 
     function resetFlappy() {
       if(animId) cancelAnimationFrame(animId);
-      birdY = 180; velocity = 0; pipes = []; frame = 0; 
+      birdY = 180; velocity = 0; pipes = []; frame = 0; score = 0;
       flappyGameOver = false; gameStarted = false;
       drawStartScreen();
     }
@@ -145,7 +141,9 @@
       ctx.fillStyle = "#70c5ce"; ctx.fillRect(0, 0, canvas.width, canvas.height);
       ctx.fillStyle = "#facc15"; ctx.beginPath(); ctx.arc(60, birdY, 12, 0, Math.PI * 2); ctx.fill();
       ctx.fillStyle = "#fff"; ctx.font = "18px sans-serif";
-      ctx.fillText("Click or Press Space to Start", 40, 200);
+      ctx.fillText("Tap or Space to Start", 70, 180);
+      ctx.font = "14px sans-serif";
+      ctx.fillText(`High Score: ${highScore}`, 110, 220);
     }
 
     function jump() { 
@@ -153,7 +151,7 @@
       if(!gameStarted) {
         gameStarted = true;
         velocity = lift;
-        drawFlappy();
+        loopFlappy();
       } else if(!flappyGameOver) {
         velocity = lift; 
       } else {
@@ -168,9 +166,10 @@
       }
     });
     canvas.addEventListener("click", jump);
+    canvas.addEventListener("touchstart", (e) => { e.preventDefault(); jump(); }, { passive: false });
 
-    function drawFlappy() {
-      if(!gameStarted) return;
+    function loopFlappy() {
+      if(!gameStarted || flappyGameOver) return;
 
       ctx.fillStyle = "#70c5ce"; ctx.fillRect(0, 0, canvas.width, canvas.height);
       velocity += gravity; birdY += velocity;
@@ -181,7 +180,7 @@
       // Spawn Pipes
       if (frame % 110 === 0) {
         let topH = Math.floor(Math.random() * (canvas.height - 200)) + 40;
-        pipes.push({ x: canvas.width, top: topH, bottom: canvas.height - topH - 120 });
+        pipes.push({ x: canvas.width, top: topH, bottom: canvas.height - topH - 120, passed: false });
       }
 
       ctx.fillStyle = "#22c55e";
@@ -189,51 +188,167 @@
         p.x -= 2;
         ctx.fillRect(p.x, 0, 30, p.top);
         ctx.fillRect(p.x, canvas.height - p.bottom, 30, p.bottom);
-        if (60 > p.x && 60 < p.x + 30 && (birdY < p.top || birdY > canvas.height - p.bottom)) flappyGameOver = true;
+
+        // Score Counter Logic
+        if (!p.passed && p.x + 30 < 60) {
+          score++;
+          p.passed = true;
+          if (score > highScore) {
+            highScore = score;
+            localStorage.setItem('flappyHighScore', highScore);
+          }
+        }
+
+        // Collision Check
+        if (60 > p.x && 60 < p.x + 30 && (birdY < p.top || birdY > canvas.height - p.bottom)) {
+          flappyGameOver = true;
+        }
       });
 
       if (birdY > canvas.height || birdY < 0) flappyGameOver = true;
 
+      // Draw Scores on Screen
+      ctx.fillStyle = "#fff"; ctx.font = "bold 20px sans-serif";
+      ctx.fillText(`Score: ${score}`, 15, 30);
+      ctx.fillText(`Best: ${highScore}`, 200, 30);
+
       if (!flappyGameOver && activeGame === 'flappy') { 
         frame++; 
-        animId = requestAnimationFrame(drawFlappy); 
+        animId = requestAnimationFrame(loopFlappy); 
       } else if (flappyGameOver) { 
-        ctx.fillStyle = "#fff"; ctx.font = "18px sans-serif"; ctx.fillText("Game Over! Tap to Restart", 50, 200); 
+        ctx.fillStyle = "rgba(0,0,0,0.5)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#fff"; ctx.font = "22px sans-serif"; ctx.fillText("Game Over!", 100, 170);
+        ctx.font = "16px sans-serif"; ctx.fillText(`Score: ${score} | Best: ${highScore}`, 90, 210);
+        ctx.fillText("Tap to Restart", 105, 250);
       }
     }
 
-    /* ---------------------------------
-       GAME 3: 2048 MINI LOGIC
-    ----------------------------------- */
-    let b2048 = Array(16).fill(0);
+    /* --- 2048 GAME LOGIC --- */
+    let board2048 = [
+      [0,0,0,0],
+      [0,0,0,0],
+      [0,0,0,0],
+      [0,0,0,0]
+    ];
+
     function init2048() {
-      b2048 = Array(16).fill(0);
-      add2048Tile(); add2048Tile(); render2048();
-    }
-    function add2048Tile() {
-      let empty = b2048.map((v, i) => v === 0 ? i : null).filter(v => v !== null);
-      if(empty.length) b2048[empty[Math.floor(Math.random() * empty.length)]] = Math.random() > 0.1 ? 2 : 4;
-    }
-    function render2048() {
-      const g = document.getElementById("grid2048"); g.innerHTML = "";
-      b2048.forEach(v => {
-        let d = document.createElement("div"); d.className = "cell-2048";
-        d.innerText = v ? v : "";
-        d.style.background = v ? "#38bdf8" : "#1e293b";
-        if(v >= 8) d.style.background = "#f59e0b";
-        g.appendChild(d);
-      });
+      board2048 = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
+      addNewTile();
+      addNewTile();
+      render2048();
     }
 
-    document.addEventListener("keydown", (e) => {
-      if (activeGame !== 'g2048') return;
-      if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
-        add2048Tile();
+    function addNewTile() {
+      let empty = [];
+      for(let r=0; r<4; r++) {
+        for(let c=0; c<4; c++) {
+          if(board2048[r][c] === 0) empty.push({r, c});
+        }
+      }
+      if(empty.length > 0) {
+        let spot = empty[Math.floor(Math.random() * empty.length)];
+        board2048[spot.r][spot.c] = Math.random() < 0.9 ? 2 : 4;
+      }
+    }
+
+    function render2048() {
+      const container = document.getElementById("grid2048");
+      container.innerHTML = "";
+      const colors = {
+        0: "#1e293b", 2: "#334155", 4: "#475569", 8: "#f97316",
+        16: "#ea580c", 32: "#dc2626", 64: "#b91c1c", 128: "#eab308",
+        256: "#ca8a04", 512: "#ca8a04", 1024: "#2563eb", 2048: "#16a34a"
+      };
+      
+      for(let r=0; r<4; r++) {
+        for(let c=0; c<4; c++) {
+          let val = board2048[r][c];
+          let div = document.createElement("div");
+          div.className = "cell-2048";
+          div.innerText = val === 0 ? "" : val;
+          div.style.background = colors[val] || "#1e293b";
+          container.appendChild(div);
+        }
+      }
+    }
+
+    function slideRow(row) {
+      let arr = row.filter(v => v !== 0);
+      for(let i=0; i<arr.length-1; i++) {
+        if(arr[i] === arr[i+1]) {
+          arr[i] *= 2;
+          arr[i+1] = 0;
+        }
+      }
+      arr = arr.filter(v => v !== 0);
+      while(arr.length < 4) arr.push(0);
+      return arr;
+    }
+
+    function moveLeft() {
+      let moved = false;
+      for(let r=0; r<4; r++) {
+        let original = [...board2048[r]];
+        board2048[r] = slideRow(board2048[r]);
+        if(original.toString() !== board2048[r].toString()) moved = true;
+      }
+      return moved;
+    }
+
+    function rotateBoard() {
+      let newB = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
+      for(let r=0; r<4; r++) {
+        for(let c=0; c<4; c++) {
+          newB[c][3-r] = board2048[r][c];
+        }
+      }
+      board2048 = newB;
+    }
+
+    function handle2048Input(direction) {
+      if(activeGame !== 'g2048') return;
+      let moved = false;
+      // 0: Left, 1: Up, 2: Right, 3: Down
+      let turns = direction;
+      for(let i=0; i<turns; i++) rotateBoard();
+      moved = moveLeft();
+      for(let i=0; i<(4-turns)%4; i++) rotateBoard();
+
+      if(moved) {
+        addNewTile();
         render2048();
       }
+    }
+
+    document.addEventListener('keydown', e => {
+      if(activeGame !== 'g2048') return;
+      if(e.key === 'ArrowLeft') { e.preventDefault(); handle2048Input(0); }
+      if(e.key === 'ArrowUp') { e.preventDefault(); handle2048Input(1); }
+      if(e.key === 'ArrowRight') { e.preventDefault(); handle2048Input(2); }
+      if(e.key === 'ArrowDown') { e.preventDefault(); handle2048Input(3); }
     });
 
-    // Start with Tic-Tac-Toe
+    // Touch swipe support for 2048
+    let touchStartX = 0, touchStartY = 0;
+    const grid2048El = document.getElementById("grid2048");
+    grid2048El.addEventListener('touchstart', e => {
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+    }, {passive: true});
+
+    grid2048El.addEventListener('touchend', e => {
+      if(activeGame !== 'g2048') return;
+      let diffX = e.changedTouches[0].clientX - touchStartX;
+      let diffY = e.changedTouches[0].clientY - touchStartY;
+      if(Math.abs(diffX) > Math.abs(diffY)) {
+        if(diffX > 30) handle2048Input(2); // Right
+        else if(diffX < -30) handle2048Input(0); // Left
+      } else {
+        if(diffY > 30) handle2048Input(3); // Down
+        else if(diffY < -30) handle2048Input(1); // Up
+      }
+    }, {passive: true});
+
     resetTTT();
   </script>
 </body>
