@@ -30,7 +30,8 @@
     canvas { background: #70c5ce; border-radius: 8px; display: block; margin: 0 auto; width: 100%; max-width: 320px; height: 400px; cursor: pointer; }
 
     /* --- 2048 --- */
-    .grid-2048 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; background: #0f172a; padding: 8px; border-radius: 8px; margin-top: 15px; }
+    .score-container-2048 { display: flex; justify-content: space-around; margin-top: 10px; font-weight: bold; font-size: 15px; color: #38bdf8; }
+    .grid-2048 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; background: #0f172a; padding: 8px; border-radius: 8px; margin-top: 10px; }
     .cell-2048 { width: 100%; height: 60px; background: #1e293b; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 20px; color: #fff; }
 
     /* AD CONTAINERS */
@@ -101,6 +102,10 @@
     <div id="g2048" class="game-screen">
       <h2>2048 Mini</h2>
       <p style="margin-top:5px; font-size: 13px;">Use Arrow Keys or Swipe</p>
+      <div class="score-container-2048">
+        <span id="score2048">Score: 0</span>
+        <span id="best2048">Best: 0</span>
+      </div>
       <div class="grid-2048" id="grid2048"></div>
       <button class="action-btn" onclick="init2048()">New Game</button>
     </div>
@@ -122,7 +127,7 @@
 
   <!-- Footer Credits -->
   <footer>
-    <p>Pocket Arcade &copy; 2026 | Made by <span>NAGA TEJA MYNEEDI</span></p>
+    <p>Pocket Arcade &copy; 2026 | Made by <span>RAMS</span></p>
   </footer>
 
   <script>
@@ -253,12 +258,25 @@
 
     /* --- 2048 GAME LOGIC --- */
     let board2048 = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
+    let score2048 = 0;
+    let best2048 = localStorage.getItem('best2048') || 0;
 
     function init2048() {
       board2048 = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
+      score2048 = 0;
+      update2048Scores();
       addNewTile();
       addNewTile();
       render2048();
+    }
+
+    function update2048Scores() {
+      if (score2048 > best2048) {
+        best2048 = score2048;
+        localStorage.setItem('best2048', best2048);
+      }
+      document.getElementById('score2048').innerText = `Score: ${score2048}`;
+      document.getElementById('best2048').innerText = `Best: ${best2048}`;
     }
 
     function addNewTile() {
@@ -300,6 +318,7 @@
       for(let i=0; i<arr.length-1; i++) {
         if(arr[i] === arr[i+1]) {
           arr[i] *= 2;
+          score2048 += arr[i];
           arr[i+1] = 0;
         }
       }
@@ -338,6 +357,7 @@
 
       if(moved) {
         addNewTile();
+        update2048Scores();
         render2048();
       }
     }
@@ -372,5 +392,8 @@
 
     resetTTT();
   </script>
+
+  <!-- ADSTERRA SOCIAL BAR -->
+  <script data-cfasync="false" src="https://bauval.org/14/c624902a9df11954a336c50044b905cd"></script>
 </body>
 </html>
