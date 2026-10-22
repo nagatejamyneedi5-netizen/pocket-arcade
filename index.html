@@ -2,395 +2,734 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="monetag" content="6d0d3a92070f0523423121e9b702be86">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Pocket Arcade - Play Free Games</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pocket Arcade - Play Free Online Games</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; touch-action: manipulation; }
-    body { background-color: #0f172a; color: #fff; display: flex; flex-direction: column; min-height: 100vh; text-align: center; }
-    
-    header { background: #1e293b; padding: 15px; border-bottom: 2px solid #334155; }
-    header h1 { color: #38bdf8; font-size: 24px; }
+    :root {
+      --bg: #0b0f19;
+      --card-bg: #151d30;
+      --card-border: #232f48;
+      --accent: #38bdf8;
+      --accent-hover: #0284c7;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --success: #22c55e;
+      --danger: #ef4444;
+    }
 
-    /* Navigation Tabs */
-    .tab-bar { display: flex; justify-content: center; gap: 10px; padding: 15px; background: #0f172a; flex-wrap: wrap; }
-    .tab-btn { background: #1e293b; color: #94a3b8; border: 1px solid #334155; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; }
-    .tab-btn.active, .tab-btn:hover { background: #38bdf8; color: #0f172a; border-color: #38bdf8; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-    /* Game Container */
-    .game-area { flex: 1; display: flex; justify-content: center; align-items: center; padding: 10px; }
-    .game-screen { display: none; width: 100%; max-width: 400px; background: #1e293b; padding: 20px; border-radius: 12px; border: 1px solid #334155; }
-    .game-screen.active { display: block; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      line-height: 1.5;
+    }
 
-    /* --- TIC TAC TOE --- */
-    .ttt-board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 15px; }
-    .ttt-cell { width: 100%; height: 90px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; font-size: 36px; font-weight: bold; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #38bdf8; }
+    header {
+      width: 100%;
+      text-align: center;
+      padding: 20px 10px 10px;
+      background: #060911;
+      border-bottom: 1px solid var(--card-border);
+    }
 
-    /* --- FLAPPY BIRD --- */
-    canvas { background: #70c5ce; border-radius: 8px; display: block; margin: 0 auto; width: 100%; max-width: 320px; height: 400px; cursor: pointer; }
+    h1 {
+      color: var(--accent);
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 10px;
+    }
 
-    /* --- 2048 --- */
-    .score-container-2048 { display: flex; justify-content: space-around; margin-top: 10px; font-weight: bold; font-size: 15px; color: #38bdf8; }
-    .grid-2048 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; background: #0f172a; padding: 8px; border-radius: 8px; margin-top: 10px; }
-    .cell-2048 { width: 100%; height: 60px; background: #1e293b; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 20px; color: #fff; }
+    .ad-container {
+      margin: 10px auto;
+      text-align: center;
+      min-height: 90px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: rgba(255,255,255,0.02);
+      border-radius: 8px;
+      overflow: hidden;
+    }
 
-    /* AD CONTAINERS */
-    .ad-slot { width: 100%; max-width: 728px; margin: 10px auto; background: #1e293b; border: 1px dashed #475569; display: flex; align-items: center; justify-content: center; border-radius: 8px; overflow: hidden; padding: 5px; }
-    .ad-slot-300 { width: 100%; max-width: 300px; min-height: 250px; margin: 10px auto; background: #1e293b; border: 1px dashed #475569; display: flex; align-items: center; justify-content: center; border-radius: 8px; overflow: hidden; padding: 5px; }
-    button.action-btn { margin-top: 15px; padding: 10px 20px; background: #38bdf8; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; color: #0f172a; }
+    .game-nav {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin: 20px 10px;
+      max-width: 800px;
+    }
 
-    /* Footer Credits */
-    footer { background: #1e293b; padding: 15px; border-top: 1px solid #334155; margin-top: auto; font-size: 13px; color: #94a3b8; }
-    footer span { color: #38bdf8; font-weight: 600; }
+    .nav-btn {
+      background: var(--card-bg);
+      color: var(--text);
+      border: 1px solid var(--card-border);
+      padding: 10px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: all 0.2s ease;
+    }
+
+    .nav-btn:hover, .nav-btn.active {
+      background: var(--accent);
+      color: #000;
+      border-color: var(--accent);
+      box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+    }
+
+    main {
+      width: 100%;
+      max-width: 500px;
+      padding: 0 15px;
+      flex: 1;
+    }
+
+    .game-card {
+      display: none;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      text-align: center;
+    }
+
+    .game-card.active {
+      display: block;
+    }
+
+    .score-bar {
+      display: flex;
+      justify-content: space-between;
+      background: #0f172a;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-weight: 700;
+      margin-bottom: 15px;
+      border: 1px solid var(--card-border);
+    }
+
+    .score-val {
+      color: var(--accent);
+    }
+
+    .btn {
+      background: var(--accent);
+      color: #000;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.95rem;
+      margin: 5px;
+      transition: background 0.2s;
+    }
+
+    .btn:hover {
+      background: var(--accent-hover);
+      color: #fff;
+    }
+
+    .btn-secondary {
+      background: #334155;
+      color: #fff;
+    }
+
+    .btn-secondary:hover {
+      background: #475569;
+    }
+
+    canvas {
+      background: #0f172a;
+      border-radius: 8px;
+      display: block;
+      margin: 0 auto 15px;
+      border: 1px solid var(--card-border);
+      max-width: 100%;
+    }
+
+    /* TIC TAC TOE */
+    .ttt-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      width: 270px;
+      height: 270px;
+      margin: 0 auto 15px;
+    }
+
+    .ttt-cell {
+      background: #0f172a;
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      font-size: 2.5rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    /* 2048 */
+    .grid-2048 {
+      width: 280px;
+      height: 280px;
+      background: #0f172a;
+      border-radius: 8px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      padding: 8px;
+      margin: 0 auto 15px;
+    }
+
+    .tile-2048 {
+      background: var(--card-bg);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.2rem;
+    }
+
+    /* MEMORY MATCH */
+    .memory-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      width: 280px;
+      margin: 0 auto 15px;
+    }
+
+    .memory-card {
+      height: 65px;
+      background: #0f172a;
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      font-size: 1.8rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    footer {
+      width: 100%;
+      text-align: center;
+      padding: 20px;
+      margin-top: 30px;
+      background: #060911;
+      border-top: 1px solid var(--card-border);
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    footer span {
+      color: var(--accent);
+      font-weight: 700;
+    }
   </style>
 </head>
 <body>
 
   <header>
     <h1>🎮 Pocket Arcade</h1>
+    <!-- TOP AD BANNER (728x90) -->
+    <div class="ad-container">
+      <script type="text/javascript">
+        atOptions = {
+          'key' : '9036c0a0c4f8d68f237ef777f98504ca',
+          'format' : 'iframe',
+          'height' : 90,
+          'width' : 728,
+          'params' : {}
+        };
+      </script>
+      <script type="text/javascript" src="//www.highperformanceformat.com/9036c0a0c4f8d68f237ef777f98504ca/invoke.js"></script>
+    </div>
   </header>
 
-  <!-- TOP AD CONTAINER (728x90 Banner) -->
-  <div class="ad-slot">
-    <script type="text/javascript">
-      atOptions = {
-        'key' : '37e1f075f95ad6d3364e5e9c606a2870',
-        'format' : 'iframe',
-        'height' : 90,
-        'width' : 728,
-        'params' : {}
-      };
-    </script>
-    <script type="text/javascript" src="https://bauval.org/22/37e1f075f95ad6d3364e5e9c606a2870"></script>
-  </div>
+  <nav class="game-nav">
+    <button class="nav-btn active" onclick="showGame('2048')">2048</button>
+    <button class="nav-btn" onclick="showGame('flappy')">Flappy Bird</button>
+    <button class="nav-btn" onclick="showGame('snake')">Snake</button>
+    <button class="nav-btn" onclick="showGame('breaker')">Brick Breaker</button>
+    <button class="nav-btn" onclick="showGame('memory')">Memory Match</button>
+    <button class="nav-btn" onclick="showGame('ttt')">Tic-Tac-Toe</button>
+  </nav>
 
-  <!-- Game Selector -->
-  <div class="tab-bar">
-    <button class="tab-btn active" onclick="showGame('tictactoe', this)">❌ Tic-Tac-Toe</button>
-    <button class="tab-btn" onclick="showGame('flappy', this)">🐦 Flappy Bird</button>
-    <button class="tab-btn" onclick="showGame('g2048', this)">🔢 2048</button>
-  </div>
-
-  <main class="game-area">
-    <!-- TIC TAC TOE -->
-    <div id="tictactoe" class="game-screen active">
-      <h2>Tic-Tac-Toe</h2>
-      <p id="ttt-status" style="margin-top:10px;">Turn: Player X</p>
-      <div class="ttt-board">
-        <div class="ttt-cell" onclick="makeMove(this, 0)"></div>
-        <div class="ttt-cell" onclick="makeMove(this, 1)"></div>
-        <div class="ttt-cell" onclick="makeMove(this, 2)"></div>
-        <div class="ttt-cell" onclick="makeMove(this, 3)"></div>
-        <div class="ttt-cell" onclick="makeMove(this, 4)"></div>
-        <div class="ttt-cell" onclick="makeMove(this, 5)"></div>
-        <div class="ttt-cell" onclick="makeMove(this, 6)"></div>
-        <div class="ttt-cell" onclick="makeMove(this, 7)"></div>
-        <div class="ttt-cell" onclick="makeMove(this, 8)"></div>
+  <main>
+    <!-- 2048 -->
+    <div id="game-2048" class="game-card active">
+      <div class="score-bar">
+        <span>Score: <span id="s2048" class="score-val">0</span></span>
+        <span>High: <span id="h2048" class="score-val">0</span></span>
       </div>
-      <button class="action-btn" onclick="resetTTT()">Restart Game</button>
+      <div class="grid-2048" id="board2048"></div>
+      <button class="btn" onclick="init2048()">New Game</button>
+      <button class="btn btn-secondary" onclick="shareScore('2048')">Share Score</button>
     </div>
 
     <!-- FLAPPY BIRD -->
-    <div id="flappy" class="game-screen">
-      <h2>Flappy Bird</h2>
-      <p style="margin-top:5px; font-size: 13px;">Tap or Space to Jump</p>
-      <canvas id="flappyCanvas" width="320" height="400"></canvas>
-      <button class="action-btn" onclick="resetFlappy()">Restart Game</button>
+    <div id="game-flappy" class="game-card">
+      <div class="score-bar">
+        <span>Score: <span id="sFlappy" class="score-val">0</span></span>
+        <span>High: <span id="hFlappy" class="score-val">0</span></span>
+      </div>
+      <canvas id="flappyCanvas" width="300" height="380"></canvas>
+      <button class="btn" onclick="resetFlappy()">Restart</button>
+      <button class="btn btn-secondary" onclick="shareScore('Flappy Bird')">Share Score</button>
     </div>
 
-    <!-- 2048 -->
-    <div id="g2048" class="game-screen">
-      <h2>2048 Mini</h2>
-      <p style="margin-top:5px; font-size: 13px;">Use Arrow Keys or Swipe</p>
-      <div class="score-container-2048">
-        <span id="score2048">Score: 0</span>
-        <span id="best2048">Best: 0</span>
+    <!-- SNAKE -->
+    <div id="game-snake" class="game-card">
+      <div class="score-bar">
+        <span>Score: <span id="sSnake" class="score-val">0</span></span>
+        <span>High: <span id="hSnake" class="score-val">0</span></span>
       </div>
-      <div class="grid-2048" id="grid2048"></div>
-      <button class="action-btn" onclick="init2048()">New Game</button>
+      <canvas id="snakeCanvas" width="300" height="300"></canvas>
+      <button class="btn" onclick="resetSnake()">Restart</button>
+      <button class="btn btn-secondary" onclick="shareScore('Snake')">Share Score</button>
+    </div>
+
+    <!-- BRICK BREAKER -->
+    <div id="game-breaker" class="game-card">
+      <div class="score-bar">
+        <span>Score: <span id="sBreaker" class="score-val">0</span></span>
+        <span>High: <span id="hBreaker" class="score-val">0</span></span>
+      </div>
+      <canvas id="breakerCanvas" width="300" height="350"></canvas>
+      <button class="btn" onclick="resetBreaker()">Restart</button>
+      <button class="btn btn-secondary" onclick="shareScore('Brick Breaker')">Share Score</button>
+    </div>
+
+    <!-- MEMORY MATCH -->
+    <div id="game-memory" class="game-card">
+      <div class="score-bar">
+        <span>Moves: <span id="sMemory" class="score-val">0</span></span>
+        <span>Best: <span id="hMemory" class="score-val">-</span></span>
+      </div>
+      <div class="memory-grid" id="memoryBoard"></div>
+      <button class="btn" onclick="initMemory()">Reset</button>
+    </div>
+
+    <!-- TIC TAC TOE -->
+    <div id="game-ttt" class="game-card">
+      <div class="score-bar">
+        <span id="tttStatus" style="width:100%; text-align:center;">Player X's Turn</span>
+      </div>
+      <div class="ttt-grid" id="tttBoard"></div>
+      <button class="btn" onclick="initTTT()">Reset Match</button>
     </div>
   </main>
 
-  <!-- BOTTOM AD CONTAINER (300x250 Banner) -->
-  <div class="ad-slot-300">
+  <!-- BOTTOM AD BANNER (300x250) -->
+  <div class="ad-container" style="margin: 25px 0;">
     <script type="text/javascript">
       atOptions = {
-        'key' : '7fc85894a31d1f8cc4f0fc88ccc2c485',
+        'key' : '3d4ecae5ff0556f8f533a1f9df881f34',
         'format' : 'iframe',
         'height' : 250,
         'width' : 300,
         'params' : {}
       };
     </script>
-    <script type="text/javascript" src="https://bauval.org/22/7fc85894a31d1f8cc4f0fc88ccc2c485"></script>
+    <script type="text/javascript" src="//www.highperformanceformat.com/3d4ecae5ff0556f8f533a1f9df881f34/invoke.js"></script>
   </div>
 
-  <!-- Footer Credits -->
   <footer>
-    <p>Pocket Arcade &copy; 2026 | Made by <span>RANS</span></p>
+    Made with ❤️ by <span>RANS</span>
   </footer>
 
   <script>
-    let activeGame = 'tictactoe';
-
-    function showGame(gameId, btn) {
-      activeGame = gameId;
-      document.querySelectorAll('.game-screen').forEach(el => el.classList.remove('active'));
-      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-      document.getElementById(gameId).classList.add('active');
-      btn.classList.add('active');
-      if(gameId === 'flappy') resetFlappy();
-      if(gameId === 'g2048') init2048();
+    // --- SYNTHESIZED WEB AUDIO EFFECTS ---
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playSound(freq, duration, type = 'sine') {
+      try {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {}
     }
 
-    /* --- TIC TAC TOE LOGIC --- */
-    let tttTurn = 'X';
-    let tttBoard = ["","","","","","","","",""];
-    function makeMove(cell, idx) {
-      if(tttBoard[idx] !== "") return;
-      tttBoard[idx] = tttTurn;
-      cell.innerText = tttTurn;
-      cell.style.color = tttTurn === 'X' ? '#38bdf8' : '#f43f5e';
-      tttTurn = tttTurn === 'X' ? 'O' : 'X';
-      document.getElementById('ttt-status').innerText = `Turn: Player ${tttTurn}`;
-    }
-    function resetTTT() {
-      tttBoard = ["","","","","","","","",""];
-      tttTurn = 'X';
-      document.getElementById('ttt-status').innerText = "Turn: Player X";
-      document.querySelectorAll('.ttt-cell').forEach(c => c.innerText = "");
-    }
-
-    /* --- FLAPPY BIRD LOGIC --- */
-    const canvas = document.getElementById("flappyCanvas");
-    const ctx = canvas.getContext("2d");
-    let birdY = 180, gravity = 0.35, lift = -7, velocity = 0;
-    let pipes = [], frame = 0, score = 0, highScore = localStorage.getItem('flappyHighScore') || 0;
-    let flappyGameOver = false, gameStarted = false, animId = null;
-
-    function resetFlappy() {
-      if(animId) cancelAnimationFrame(animId);
-      birdY = 180; velocity = 0; pipes = []; frame = 0; score = 0;
-      flappyGameOver = false; gameStarted = false;
-      drawStartScreen();
-    }
-
-    function drawStartScreen() {
-      ctx.fillStyle = "#70c5ce"; ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = "#facc15"; ctx.beginPath(); ctx.arc(60, birdY, 12, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = "#fff"; ctx.font = "18px sans-serif";
-      ctx.fillText("Tap or Space to Start", 70, 180);
-      ctx.font = "14px sans-serif";
-      ctx.fillText(`High Score: ${highScore}`, 110, 220);
-    }
-
-    function jump() { 
-      if(activeGame !== 'flappy') return;
-      if(!gameStarted) {
-        gameStarted = true;
-        velocity = lift;
-        loopFlappy();
-      } else if(!flappyGameOver) {
-        velocity = lift; 
-      } else {
-        resetFlappy();
-      }
-    }
-
-    document.addEventListener("keydown", (e) => { 
-      if(e.code === "Space" && activeGame === 'flappy') {
-        e.preventDefault();
-        jump(); 
-      }
-    });
-    canvas.addEventListener("click", jump);
-    canvas.addEventListener("touchstart", (e) => { e.preventDefault(); jump(); }, { passive: false });
-
-    function loopFlappy() {
-      if(!gameStarted || flappyGameOver) return;
-
-      ctx.fillStyle = "#70c5ce"; ctx.fillRect(0, 0, canvas.width, canvas.height);
-      velocity += gravity; birdY += velocity;
+    // --- NAVIGATION SWITCHER ---
+    function showGame(gameId) {
+      document.querySelectorAll('.game-card').forEach(card => card.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
       
-      ctx.fillStyle = "#facc15"; ctx.beginPath(); ctx.arc(60, birdY, 12, 0, Math.PI * 2); ctx.fill();
+      document.getElementById('game-' + gameId).classList.add('active');
+      event.target.classList.add('active');
+    }
 
-      if (frame % 110 === 0) {
-        let topH = Math.floor(Math.random() * (canvas.height - 200)) + 40;
-        pipes.push({ x: canvas.width, top: topH, bottom: canvas.height - topH - 120, passed: false });
-      }
-
-      ctx.fillStyle = "#22c55e";
-      pipes.forEach(p => {
-        p.x -= 2;
-        ctx.fillRect(p.x, 0, 30, p.top);
-        ctx.fillRect(p.x, canvas.height - p.bottom, 30, p.bottom);
-
-        if (!p.passed && p.x + 30 < 60) {
-          score++;
-          p.passed = true;
-          if (score > highScore) {
-            highScore = score;
-            localStorage.setItem('flappyHighScore', highScore);
-          }
-        }
-
-        if (60 > p.x && 60 < p.x + 30 && (birdY < p.top || birdY > canvas.height - p.bottom)) {
-          flappyGameOver = true;
-        }
-      });
-
-      if (birdY > canvas.height || birdY < 0) flappyGameOver = true;
-
-      ctx.fillStyle = "#fff"; ctx.font = "bold 20px sans-serif";
-      ctx.fillText(`Score: ${score}`, 15, 30);
-      ctx.fillText(`Best: ${highScore}`, 200, 30);
-
-      if (!flappyGameOver && activeGame === 'flappy') { 
-        frame++; 
-        animId = requestAnimationFrame(loopFlappy); 
-      } else if (flappyGameOver) { 
-        ctx.fillStyle = "rgba(0,0,0,0.5)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = "#fff"; ctx.font = "22px sans-serif"; ctx.fillText("Game Over!", 100, 170);
-        ctx.font = "16px sans-serif"; ctx.fillText(`Score: ${score} | Best: ${highScore}`, 90, 210);
-        ctx.fillText("Tap to Restart", 105, 250);
+    function shareScore(gameName) {
+      const text = `I just played ${gameName} on Pocket Arcade! Check it out at bit.ly/pocket-arcade`;
+      if (navigator.share) {
+        navigator.share({ title: 'Pocket Arcade', text: text, url: window.location.href });
+      } else {
+        navigator.clipboard.writeText(text);
+        alert('Score details copied to clipboard!');
       }
     }
 
-    /* --- 2048 GAME LOGIC --- */
-    let board2048 = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
-    let score2048 = 0;
-    let best2048 = localStorage.getItem('best2048') || 0;
+    // --- 2048 ENGINE ---
+    let b2048 = [], s2048 = 0;
+    let h2048 = localStorage.getItem('h2048') || 0;
+    document.getElementById('h2048').innerText = h2048;
 
     function init2048() {
-      board2048 = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
-      score2048 = 0;
-      update2048Scores();
-      addNewTile();
-      addNewTile();
+      b2048 = Array(16).fill(0);
+      s2048 = 0;
+      document.getElementById('s2048').innerText = s2048;
+      add2048(); add2048();
       render2048();
     }
 
-    function update2048Scores() {
-      if (score2048 > best2048) {
-        best2048 = score2048;
-        localStorage.setItem('best2048', best2048);
-      }
-      document.getElementById('score2048').innerText = `Score: ${score2048}`;
-      document.getElementById('best2048').innerText = `Best: ${best2048}`;
-    }
-
-    function addNewTile() {
-      let empty = [];
-      for(let r=0; r<4; r++) {
-        for(let c=0; c<4; c++) {
-          if(board2048[r][c] === 0) empty.push({r, c});
-        }
-      }
-      if(empty.length > 0) {
-        let spot = empty[Math.floor(Math.random() * empty.length)];
-        board2048[spot.r][spot.c] = Math.random() < 0.9 ? 2 : 4;
-      }
+    function add2048() {
+      let empty = b2048.map((v, i) => v === 0 ? i : null).filter(v => v !== null);
+      if (empty.length) b2048[empty[Math.floor(Math.random() * empty.length)]] = Math.random() < 0.9 ? 2 : 4;
     }
 
     function render2048() {
-      const container = document.getElementById("grid2048");
-      container.innerHTML = "";
-      const colors = {
-        0: "#1e293b", 2: "#334155", 4: "#475569", 8: "#f97316",
-        16: "#ea580c", 32: "#dc2626", 64: "#b91c1c", 128: "#eab308",
-        256: "#ca8a04", 512: "#ca8a04", 1024: "#2563eb", 2048: "#16a34a"
-      };
-      
-      for(let r=0; r<4; r++) {
-        for(let c=0; c<4; c++) {
-          let val = board2048[r][c];
-          let div = document.createElement("div");
-          div.className = "cell-2048";
-          div.innerText = val === 0 ? "" : val;
-          div.style.background = colors[val] || "#1e293b";
-          container.appendChild(div);
+      const grid = document.getElementById('board2048');
+      grid.innerHTML = '';
+      const colors = { 2:'#1e293b', 4:'#334155', 8:'#f97316', 16:'#ea580c', 32:'#ef4444', 64:'#dc2626', 128:'#eab308', 256:'#ca8a04', 512:'#3b82f6', 1024:'#2563eb', 2048:'#9333ea' };
+      b2048.forEach(v => {
+        const tile = document.createElement('div');
+        tile.className = 'tile-2048';
+        if (v > 0) {
+          tile.innerText = v;
+          tile.style.background = colors[v] || '#38bdf8';
+          tile.style.color = '#fff';
         }
-      }
+        grid.appendChild(tile);
+      });
     }
 
+    window.addEventListener('keydown', e => {
+      if (!document.getElementById('game-2048').classList.contains('active')) return;
+      let moved = false;
+      if (e.key === 'ArrowLeft') moved = moveLeft2048();
+      else if (e.key === 'ArrowRight') moved = moveRight2048();
+      else if (e.key === 'ArrowUp') moved = moveUp2048();
+      else if (e.key === 'ArrowDown') moved = moveDown2048();
+
+      if (moved) {
+        playSound(300, 0.08);
+        add2048(); render2048();
+      }
+    });
+
     function slideRow(row) {
-      let arr = row.filter(v => v !== 0);
-      for(let i=0; i<arr.length-1; i++) {
-        if(arr[i] === arr[i+1]) {
-          arr[i] *= 2;
-          score2048 += arr[i];
-          arr[i+1] = 0;
+      let arr = row.filter(v => v);
+      for (let i = 0; i < arr.length - 1; i++) {
+        if (arr[i] === arr[i+1]) {
+          arr[i] *= 2; s2048 += arr[i]; arr[i+1] = 0;
+          playSound(450, 0.1);
         }
       }
-      arr = arr.filter(v => v !== 0);
-      while(arr.length < 4) arr.push(0);
+      arr = arr.filter(v => v);
+      while (arr.length < 4) arr.push(0);
       return arr;
     }
 
-    function moveLeft() {
+    function moveLeft2048() {
       let moved = false;
-      for(let r=0; r<4; r++) {
-        let original = [...board2048[r]];
-        board2048[r] = slideRow(board2048[r]);
-        if(original.toString() !== board2048[r].toString()) moved = true;
+      for (let i = 0; i < 4; i++) {
+        let row = b2048.slice(i*4, i*4+4);
+        let nRow = slideRow(row);
+        if (JSON.stringify(row) !== JSON.stringify(nRow)) moved = true;
+        for (let j = 0; j < 4; j++) b2048[i*4+j] = nRow[j];
       }
-      return moved;
+      up2048(); return moved;
     }
-
-    function rotateBoard() {
-      let newB = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
-      for(let r=0; r<4; r++) {
-        for(let c=0; c<4; c++) {
-          newB[c][3-r] = board2048[r][c];
-        }
-      }
-      board2048 = newB;
-    }
-
-    function handle2048Input(direction) {
-      if(activeGame !== 'g2048') return;
+    function moveRight2048() {
       let moved = false;
-      let turns = direction;
-      for(let i=0; i<turns; i++) rotateBoard();
-      moved = moveLeft();
-      for(let i=0; i<(4-turns)%4; i++) rotateBoard();
-
-      if(moved) {
-        addNewTile();
-        update2048Scores();
-        render2048();
+      for (let i = 0; i < 4; i++) {
+        let row = b2048.slice(i*4, i*4+4).reverse();
+        let nRow = slideRow(row).reverse();
+        if (JSON.stringify(b2048.slice(i*4, i*4+4)) !== JSON.stringify(nRow)) moved = true;
+        for (let j = 0; j < 4; j++) b2048[i*4+j] = nRow[j];
       }
+      up2048(); return moved;
+    }
+    function moveUp2048() {
+      let moved = false;
+      for (let i = 0; i < 4; i++) {
+        let col = [b2048[i], b2048[i+4], b2048[i+8], b2048[i+12]];
+        let nCol = slideRow(col);
+        if (JSON.stringify(col) !== JSON.stringify(nCol)) moved = true;
+        for (let j = 0; j < 4; j++) b2048[i+j*4] = nCol[j];
+      }
+      up2048(); return moved;
+    }
+    function moveDown2048() {
+      let moved = false;
+      for (let i = 0; i < 4; i++) {
+        let col = [b2048[i], b2048[i+4], b2048[i+8], b2048[i+12]].reverse();
+        let nCol = slideRow(col).reverse();
+        if (JSON.stringify([b2048[i], b2048[i+4], b2048[i+8], b2048[i+12]]) !== JSON.stringify(nCol)) moved = true;
+        for (let j = 0; j < 4; j++) b2048[i+j*4] = nCol[j];
+      }
+      up2048(); return moved;
+    }
+    function up2048() {
+      document.getElementById('s2048').innerText = s2048;
+      if (s2048 > h2048) { h2048 = s2048; localStorage.setItem('h2048', h2048); document.getElementById('h2048').innerText = h2048; }
     }
 
-    document.addEventListener('keydown', e => {
-      if(activeGame !== 'g2048') return;
-      if(e.key === 'ArrowLeft') { e.preventDefault(); handle2048Input(0); }
-      if(e.key === 'ArrowUp') { e.preventDefault(); handle2048Input(1); }
-      if(e.key === 'ArrowRight') { e.preventDefault(); handle2048Input(2); }
-      if(e.key === 'ArrowDown') { e.preventDefault(); handle2048Input(3); }
+    // --- FLAPPY BIRD ENGINE ---
+    const fCv = document.getElementById('flappyCanvas');
+    const fCtx = fCv.getContext('2d');
+    let fBird = { x: 50, y: 150, r: 10, v: 0, g: 0.25, j: -4.5 };
+    let fPipes = [], fFrame = 0, sFlappy = 0, fOver = false;
+    let hFlappy = localStorage.getItem('hFlappy') || 0;
+    document.getElementById('hFlappy').innerText = hFlappy;
+
+    function resetFlappy() {
+      fBird.y = 150; fBird.v = 0; fPipes = []; fFrame = 0; sFlappy = 0; fOver = false;
+      document.getElementById('sFlappy').innerText = 0;
+    }
+
+    fCv.addEventListener('click', () => { if (!fOver) { fBird.v = fBird.j; playSound(400, 0.05); } });
+    window.addEventListener('keydown', e => {
+      if (e.code === 'Space' && document.getElementById('game-flappy').classList.contains('active')) {
+        if (!fOver) { fBird.v = fBird.j; playSound(400, 0.05); }
+      }
     });
 
-    let touchStartX = 0, touchStartY = 0;
-    const grid2048El = document.getElementById("grid2048");
-    grid2048El.addEventListener('touchstart', e => {
-      touchStartX = e.touches[0].clientX;
-      touchStartY = e.touches[0].clientY;
-    }, {passive: true});
+    function loopFlappy() {
+      fCtx.fillStyle = '#0f172a';
+      fCtx.fillRect(0, 0, fCv.width, fCv.height);
 
-    grid2048El.addEventListener('touchend', e => {
-      if(activeGame !== 'g2048') return;
-      let diffX = e.changedTouches[0].clientX - touchStartX;
-      let diffY = e.changedTouches[0].clientY - touchStartY;
-      if(Math.abs(diffX) > Math.abs(diffY)) {
-        if(diffX > 30) handle2048Input(2);
-        else if(diffX < -30) handle2048Input(0);
-      } else {
-        if(diffY > 30) handle2048Input(3);
-        else if(diffY < -30) handle2048Input(1);
+      if (!fOver) {
+        fBird.v += fBird.g; fBird.y += fBird.v;
+        if (fFrame % 90 === 0) {
+          let gap = 90, top = Math.floor(Math.random() * (fCv.height - gap - 80)) + 20;
+          fPipes.push({ x: fCv.width, top: top, bot: top + gap });
+        }
+        for (let i = 0; i < fPipes.length; i++) {
+          let p = fPipes[i]; p.x -= 2;
+          fCtx.fillStyle = '#22c55e';
+          fCtx.fillRect(p.x, 0, 35, p.top);
+          fCtx.fillRect(p.x, p.bot, 35, fCv.height - p.bot);
+
+          if (fBird.x + fBird.r > p.x && fBird.x - fBird.r < p.x + 35 && (fBird.y - fBird.r < p.top || fBird.y + fBird.r > p.bot)) {
+            fOver = true; playSound(150, 0.2, 'sawtooth');
+          }
+          if (p.x === 48) {
+            sFlappy++; document.getElementById('sFlappy').innerText = sFlappy;
+            playSound(600, 0.08);
+            if (sFlappy > hFlappy) { hFlappy = sFlappy; localStorage.setItem('hFlappy', hFlappy); document.getElementById('hFlappy').innerText = hFlappy; }
+          }
+        }
+        if (fPipes.length && fPipes[0].x < -40) fPipes.shift();
+        if (fBird.y + fBird.r >= fCv.height || fBird.y - fBird.r <= 0) { fOver = true; playSound(150, 0.2, 'sawtooth'); }
+        fFrame++;
       }
-    }, {passive: true});
 
-    resetTTT();
+      fCtx.fillStyle = '#38bdf8';
+      fCtx.beginPath(); fCtx.arc(fBird.x, fBird.y, fBird.r, 0, Math.PI * 2); fCtx.fill();
+
+      if (fOver) {
+        fCtx.fillStyle = 'rgba(0,0,0,0.7)'; fCtx.fillRect(0, 0, fCv.width, fCv.height);
+        fCtx.fillStyle = '#fff'; fCtx.font = 'bold 20px sans-serif'; fCtx.fillText('Game Over', 95, 180);
+      }
+      requestAnimationFrame(loopFlappy);
+    }
+
+    // --- SNAKE ENGINE ---
+    const sCv = document.getElementById('snakeCanvas');
+    const sCtx = sCv.getContext('2d');
+    let snake = [{x: 10, y: 10}], sDir = {x: 1, y: 0}, sFood = {x: 5, y: 5}, sScore = 0, sOver = false;
+    let hSnake = localStorage.getItem('hSnake') || 0;
+    document.getElementById('hSnake').innerText = hSnake;
+
+    function resetSnake() {
+      snake = [{x: 10, y: 10}]; sDir = {x: 1, y: 0}; sScore = 0; sOver = false;
+      document.getElementById('sSnake').innerText = 0;
+      spawnSnakeFood();
+    }
+
+    function spawnSnakeFood() {
+      sFood = { x: Math.floor(Math.random() * 20), y: Math.floor(Math.random() * 20) };
+    }
+
+    window.addEventListener('keydown', e => {
+      if (!document.getElementById('game-snake').classList.contains('active')) return;
+      if (e.key === 'ArrowUp' && sDir.y === 0) sDir = {x: 0, y: -1};
+      if (e.key === 'ArrowDown' && sDir.y === 0) sDir = {x: 0, y: 1};
+      if (e.key === 'ArrowLeft' && sDir.x === 0) sDir = {x: -1, y: 0};
+      if (e.key === 'ArrowRight' && sDir.x === 0) sDir = {x: 1, y: 0};
+    });
+
+    function loopSnake() {
+      if (!sOver) {
+        let head = { x: snake[0].x + sDir.x, y: snake[0].y + sDir.y };
+        if (head.x < 0 || head.x >= 20 || head.y < 0 || head.y >= 20 || snake.some(p => p.x === head.x && p.y === head.y)) {
+          sOver = true; playSound(150, 0.2, 'sawtooth');
+        } else {
+          snake.unshift(head);
+          if (head.x === sFood.x && head.y === sFood.y) {
+            sScore += 10; document.getElementById('sSnake').innerText = sScore;
+            playSound(500, 0.08);
+            if (sScore > hSnake) { hSnake = sScore; localStorage.setItem('hSnake', hSnake); document.getElementById('hSnake').innerText = hSnake; }
+            spawnSnakeFood();
+          } else { snake.pop(); }
+        }
+      }
+
+      sCtx.fillStyle = '#0f172a'; sCtx.fillRect(0, 0, sCv.width, sCv.height);
+      sCtx.fillStyle = '#ef4444'; sCtx.fillRect(sFood.x * 15, sFood.y * 15, 14, 14);
+      sCtx.fillStyle = '#38bdf8';
+      snake.forEach(p => sCtx.fillRect(p.x * 15, p.y * 15, 14, 14));
+
+      if (sOver) {
+        sCtx.fillStyle = 'rgba(0,0,0,0.7)'; sCtx.fillRect(0, 0, sCv.width, sCv.height);
+        sCtx.fillStyle = '#fff'; sCtx.font = 'bold 20px sans-serif'; sCtx.fillText('Game Over', 100, 150);
+      }
+    }
+    setInterval(loopSnake, 120);
+
+    // --- BRICK BREAKER ENGINE ---
+    const bCv = document.getElementById('breakerCanvas');
+    const bCtx = bCv.getContext('2d');
+    let bPaddle = { x: 110, w: 80, h: 10 }, bBall = { x: 150, y: 200, dx: 2, dy: -2, r: 6 };
+    let bricks = [], bScore = 0, bOver = false;
+    let hBreaker = localStorage.getItem('hBreaker') || 0;
+    document.getElementById('hBreaker').innerText = hBreaker;
+
+    function resetBreaker() {
+      bPaddle.x = 110; bBall = { x: 150, y: 200, dx: 2, dy: -2, r: 6 };
+      bScore = 0; bOver = false; document.getElementById('sBreaker').innerText = 0;
+      bricks = [];
+      for(let r=0; r<4; r++) {
+        for(let c=0; c<5; c++) bricks.push({ x: c*55 + 12, y: r*20 + 30, w: 50, h: 15, active: true });
+      }
+    }
+
+    bCv.addEventListener('mousemove', e => {
+      let rect = bCv.getBoundingClientRect();
+      bPaddle.x = e.clientX - rect.left - bPaddle.w / 2;
+    });
+
+    function loopBreaker() {
+      bCtx.fillStyle = '#0f172a'; bCtx.fillRect(0, 0, bCv.width, bCv.height);
+
+      if (!bOver) {
+        bBall.x += bBall.dx; bBall.y += bBall.dy;
+        if (bBall.x + bBall.r > bCv.width || bBall.x - bBall.r < 0) { bBall.dx *= -1; playSound(250, 0.05); }
+        if (bBall.y - bBall.r < 0) { bBall.dy *= -1; playSound(250, 0.05); }
+
+        if (bBall.y + bBall.r >= bCv.height - 15 && bBall.x > bPaddle.x && bBall.x < bPaddle.x + bPaddle.w) {
+          bBall.dy = -Math.abs(bBall.dy); playSound(350, 0.05);
+        }
+        if (bBall.y + bBall.r > bCv.width) { bOver = true; playSound(150, 0.2, 'sawtooth'); }
+
+        bricks.forEach(b => {
+          if (b.active && bBall.x > b.x && bBall.x < b.x + b.w && bBall.y - bBall.r < b.y + b.h && bBall.y + bBall.r > b.y) {
+            b.active = false; bBall.dy *= -1; bScore += 10;
+            document.getElementById('sBreaker').innerText = bScore;
+            playSound(550, 0.08);
+            if (bScore > hBreaker) { hBreaker = bScore; localStorage.setItem('hBreaker', hBreaker); document.getElementById('hBreaker').innerText = hBreaker; }
+          }
+        });
+      }
+
+      bCtx.fillStyle = '#38bdf8'; bCtx.fillRect(bPaddle.x, bCv.height - 15, bPaddle.w, bPaddle.h);
+      bCtx.beginPath(); bCtx.arc(bBall.x, bBall.y, bBall.r, 0, Math.PI*2); bCtx.fill();
+      bricks.forEach(b => { if (b.active) { bCtx.fillStyle = '#22c55e'; bCtx.fillRect(b.x, b.y, b.w, b.h); } });
+
+      if (bOver) {
+        bCtx.fillStyle = 'rgba(0,0,0,0.7)'; bCtx.fillRect(0, 0, bCv.width, bCv.height);
+        bCtx.fillStyle = '#fff'; bCtx.font = 'bold 20px sans-serif'; bCtx.fillText('Game Over', 100, 180);
+      }
+      requestAnimationFrame(loopBreaker);
+    }
+
+    // --- MEMORY MATCH ---
+    const icons = ['🐶','🐱','🐭','🐹','🦊','🐻','🐼','🐨'];
+    let mCards = [], mFlipped = [], mMoves = 0;
+    function initMemory() {
+      const grid = document.getElementById('memoryBoard'); grid.innerHTML = '';
+      mCards = [...icons, ...icons].sort(() => Math.random() - 0.5);
+      mFlipped = []; mMoves = 0; document.getElementById('sMemory').innerText = 0;
+      mCards.forEach((icon, i) => {
+        const card = document.createElement('div'); card.className = 'memory-card';
+        card.dataset.idx = i; card.dataset.icon = icon;
+        card.innerText = '❓';
+        card.addEventListener('click', handleMemoryClick);
+        grid.appendChild(card);
+      });
+    }
+
+    function handleMemoryClick(e) {
+      let card = e.target;
+      if (mFlipped.length < 2 && !card.classList.contains('flipped')) {
+        card.innerText = card.dataset.icon; card.classList.add('flipped');
+        mFlipped.push(card); playSound(350, 0.05);
+        if (mFlipped.length === 2) {
+          mMoves++; document.getElementById('sMemory').innerText = mMoves;
+          if (mFlipped[0].dataset.icon === mFlipped[1].dataset.icon) {
+            playSound(600, 0.1); mFlipped = [];
+          } else {
+            setTimeout(() => {
+              mFlipped.forEach(c => { c.innerText = '❓'; c.classList.remove('flipped'); });
+              mFlipped = [];
+            }, 800);
+          }
+        }
+      }
+    }
+
+    // --- TIC TAC TOE ---
+    let tttState = ["", "", "", "", "", "", "", "", ""], tttPlayer = "X", tttActive = true;
+    function initTTT() {
+      const board = document.getElementById('tttBoard'); board.innerHTML = '';
+      tttState = ["", "", "", "", "", "", "", "", ""]; tttPlayer = "X"; tttActive = true;
+      document.getElementById('tttStatus').innerText = "Player X's Turn";
+      for (let i = 0; i < 9; i++) {
+        const cell = document.createElement('div'); cell.className = 'ttt-cell';
+        cell.dataset.idx = i; cell.addEventListener('click', handleTTTClick);
+        board.appendChild(cell);
+      }
+    }
+    function handleTTTClick(e) {
+      let idx = e.target.dataset.idx;
+      if (tttState[idx] !== "" || !tttActive) return;
+      tttState[idx] = tttPlayer; e.target.innerText = tttPlayer;
+      playSound(tttPlayer === 'X' ? 400 : 500, 0.05);
+      if (tttState.every(c => c !== "")) { document.getElementById('tttStatus').innerText = "Draw!"; tttActive = false; return; }
+      tttPlayer = tttPlayer === "X" ? "O" : "X";
+      document.getElementById('tttStatus').innerText = `Player ${tttPlayer}'s Turn`;
+    }
+
+    // START ALL GAMES
+    init2048(); resetFlappy(); loopFlappy(); resetSnake(); resetBreaker(); loopBreaker(); initMemory(); initTTT();
   </script>
 </body>
 </html>
